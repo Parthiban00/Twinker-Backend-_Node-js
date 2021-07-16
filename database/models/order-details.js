@@ -91,8 +91,29 @@ const TaskSchema = new mongoose.Schema({
 type:Array
     },
     CreatedDate:{
-        type:Date
-    }
+        type:String
+    },
+    DeliveryPartnerStatus:{
+      type:String
+    },
+    ActualAmount:{
+      type:Number
+    },
+    CreatedTime:{
+      type:String
+    },
+    Discount:{
+      type:Number
+    },
+    DiscountDescritpion:{
+      type:String
+    },
+    DiscountCode:{
+      type:String
+    },
+
+
+
 
 
 });
