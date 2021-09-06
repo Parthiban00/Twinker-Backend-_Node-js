@@ -178,6 +178,12 @@ else{
             .then((userregisters)=> res.send(userregisters))
             .catch((error)=>console.log(error));
         });
+        app.get('/userregisters/:MobileNo/:ActiveYn',(req,res)=>{
+          console.log("user login get ");
+          Register.find({MobileNo:req.params.MobileNo,ActiveYn:true})
+          .then((userregisters)=> res.send(userregisters))
+          .catch((error)=>console.log(error));
+      });
 
         app.post('/restaurants',(req,res)=>{
 
@@ -213,6 +219,8 @@ console.log("save restaurant");
 
           console.log('get restaurants entered');
 
+
+
             Restaurant.find({'ActiveYn':true,'DeleteYn':false})
             .then(restaurants=>res.send(restaurants))
             .catch((error)=>console.log(error));
@@ -220,11 +228,20 @@ console.log("save restaurant");
 
 
         app.get('/restaurants/:ActiveYn/:Type',(req,res)=>{
+          let date_ob = new Date();
+          let hours = date_ob.getHours();
+
+// current minutes
+let minutes = date_ob.getMinutes();
+
+// current seconds
+let seconds = date_ob.getSeconds();
+console.log(hours + ":" + minutes);
 
           console.log('get restaurants entered');
 
           if(req.params.ActiveYn=="true" || req.params.ActiveYn=="false" ){
-            Restaurant.find({'ActiveYn':true,'DeleteYn':false,'ActiveYn':req.params.ActiveYn,'Type':req.params.Type})
+            Restaurant.find({'ActiveYn':true,'DeleteYn':false,'ActiveYn':req.params.ActiveYn,'Type':req.params.Type}).sort({"AvailableStatus":-1})
             .then(restaurants=>res.send(restaurants))
             .catch((error)=>console.log(error));
           }
@@ -259,8 +276,9 @@ console.log("save restaurant");
         });
 
         app.get('/restaurants/:restId/:activeYn/mainmenus',(req,res)=>{
+          console.log("main menu entered");
 
-            MainMenu.find({RestaurantId: req.params.restId,ActiveYn:req.params.activeYn})
+            MainMenu.find({RestaurantId: req.params.restId,ActiveYn:req.params.activeYn}).sort({"AvailableStatus":-1})
             .then(mainmenus=>res.send(mainmenus))
             .catch((error)=>console.log(error));
         });
@@ -268,7 +286,7 @@ console.log("save restaurant");
         app.post('/restaurants/:restId/mainmenus/:menuId/products',(req,res)=>{
 
 
-            (new Products ({'RestaurantId': req.params.restId,'MenuId':req.params.menuId,'ProductName':req.body.ProductName,'Price':req.body.Price,'Size':req.body.Size,'Description':req.body.Description,'AvailableTime':req.body.AvailableTime,'AvailableStatus':req.body.AvailableStatus,'AvailableDays':req.body.AvailableDays,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Offer':req.body.Offer,'OfferPrice':req.body.OfferPrice,'OfferDescription':req.body.OfferDescription,'Commission':req.body.Commission,'Suggestion':req.body.Suggestion,'Sort':req.body.Sort,'ItemCount':req.body.ItemCount}))
+            (new Products ({'RestaurantId': req.params.restId,'MenuId':req.params.menuId,'ProductName':req.body.ProductName,'Price':req.body.Price,'Size':req.body.Size,'Description':req.body.Description,'AvailableTime':req.body.AvailableTime,'AvailableStatus':req.body.AvailableStatus,'AvailableDays':req.body.AvailableDays,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Offer':req.body.Offer,'OfferPrice':req.body.OfferPrice,'OfferDescription':req.body.OfferDescription,'Commission':req.body.Commission,'Suggestion':req.body.Suggestion,'Sort':req.body.Sort,'ItemCount':req.body.ItemCount,'ImageUrl':req.body.ImageUrl,'Amount':req.body.Amount,'ActualAmount':req.body.ActualAmount,'RestaurantName':req.body.RestaurantName}))
             .save()
             .then((Products)=> res.send(Products))
             .catch((error)=>console.log(error));
@@ -277,7 +295,7 @@ console.log("save restaurant");
 
         app.get('/restaurants/:restId/mainmenus/products',(req,res)=>{
 
-            Products.find({RestaurantId: req.params.restId})
+            Products.find({RestaurantId: req.params.restId}).sort({"AvailableStatus":-1})
             .then(Products=>res.send(Products))
             .catch((error)=>console.log(error));
         });
@@ -544,7 +562,7 @@ else{
 
                               app.get('/restaurants/:restId/mainmenus/products/:suggestion',(req,res)=>{
 console.log("suggestion entered");
-                                Products.find({RestaurantId: req.params.restId,Suggestion:req.params.suggestion})
+                                Products.find({RestaurantId: req.params.restId,Suggestion:req.params.suggestion,AvailableStatus:true})
                                 .then(Products=>res.send(Products))
                                 .catch((error)=>console.log(error));
                             });
@@ -577,7 +595,7 @@ console.log("suggestion entered");
                                                         app.patch('/restaurants/:_id', (req,res)=>{
 
 
-
+                                                          updateProducts(req.params._id,req.body.availableStatus);
                                                           Restaurant.findOneAndUpdate({_id: req.params._id}, {$set: {AvailableStatus:req.body.availableStatus}})
                                                           .then((restaurants)=> res.send(restaurants))
                                                           .catch((error)=>console.log(error));
@@ -599,7 +617,7 @@ console.log("suggestion entered");
                                                           app.patch('/products/:restId/:menuId', (req,res)=>{
 
 console.log("restId "+req.params.restId+" menuId "+req.params.menuId);
-
+updateMainMenu(req.params.restId,req.params.menuId,req.body.availableStatus);
                                                             Products.updateMany({RestaurantId:req.params.restId,MenuId:req.params.menuId}, {$set: {AvailableStatus:req.body.availableStatus}})
                                                            // MainMenu.updateMany({RestaurantId: req.params.restId,_id:req.params.menuId}, {$set: {AvailableStatus:req.body.availableStatus}})
                                                             .then((products)=> res.send(products))
@@ -623,8 +641,8 @@ console.log("restId "+req.params.restId+" menuId "+req.params.menuId);
                                                                                                        }),
 
                                                                                                        app.get('/random/products/:category',(req,res)=>{
-
-                                                                                                        Products.find({Category: req.params.category})
+                                                                                                        //console.log("random products entered");
+                                                                                                        Products.find({Category: req.params.category,AvailableStatus:true})
                                                                                                         .then(Products=>res.send(Products))
                                                                                                         .catch((error)=>console.log(error));
                                                                                                     });
@@ -647,7 +665,22 @@ console.log("restId "+req.params.restId+" menuId "+req.params.menuId);
 
 
 
+function updateMainMenu(restId,menuId,availableStatus){
+  console.log('udate main menu entered'+restId)
+  MainMenu.updateMany({RestaurantId: restId,_id:menuId}, {$set: {AvailableStatus:availableStatus}})
+  .then()
+  .catch((error)=>console.log(error));
+}
 
+function updateProducts(restId,availableStatus){
+  console.log('udate produts entered'+restId)
+  if(availableStatus==false){
+  Products.updateMany({RestaurantId: restId}, {$set: {AvailableStatus:availableStatus}})
+  .then()
+  .catch((error)=>console.log(error));
+}
+else{}
+}
 
 
 
