@@ -50,11 +50,11 @@ const TaskSchema = new mongoose.Schema({
 
     },
     OpenTime : {
-        type: String,
+        type: Number,
 
     },
     CloseTime : {
-        type: String,
+        type: Number,
 
     },
     UserType : {
