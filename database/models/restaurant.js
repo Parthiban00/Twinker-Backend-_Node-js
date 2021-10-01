@@ -50,11 +50,11 @@ const TaskSchema = new mongoose.Schema({
 
     },
     OpenTime : {
-        type: Number,
+        type: String,
 
     },
     CloseTime : {
-        type: Number,
+        type: String,
 
     },
     UserType : {
@@ -102,6 +102,12 @@ const TaskSchema = new mongoose.Schema({
     },
     ImageUrl:{
 type:String
+    },
+    Category:{
+      type:String
+    },
+    CategoryId:{
+      type:String
     }
 
 
