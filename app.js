@@ -20,8 +20,9 @@ let Razorpay = require('razorpay');
 //const socket = require('socket.io');
 const ShopCategory=require('./database/models/shop-category');
 const Offers = require('./database/models/offers');
-//const server=require('http').createServer(app);
-//const io=require("socket.io")(server,{cors:{origin:"*"}});
+const MainCategory=require('./database/models/main-category');
+// const server=require('http').createServer(app);
+
 app.use(express.json());
 // ---------------------------------new--------------
 const port = process.env.PORT || 5000;
@@ -33,6 +34,32 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.urlencoded({extended:false}))
 
+
+
+
+// const server=app.listen(5000,()=>{
+//   console.log("server is runnging");
+// });
+
+
+//const io=socket(server);
+
+
+// const io=require("socket.io")(server,{cors:{origin:"*"}});
+// io.on('connection',(socket)=>{
+//   console.log(`new connection id: ${socket.id}`);
+//   SocketCheck();
+// socket.on('message',(data)=>{
+//   console.log("dsafasdf socket "+data);
+// })
+// });
+
+
+
+
+// function SocketCheck(){
+//   console.log("connect check function");
+// }
 
 const RazorpayConfig={
   key_id:'rzp_live_BNBLXyHk09HIQZ',
@@ -52,7 +79,8 @@ app.use((req,res,next)=> {
 
 
 var instance = new Razorpay({ key_id: 'rzp_live_Lr7mSG4IeRtTrk', key_secret: 'XVMQGkUnw8Yqcp1VG9OrXTOK' })
-
+var orderPlacedUserId;
+var cartRemovedUserId;
 
 app.post('/razorpay/:amount',(req,res)=>{
   var options = {
@@ -270,6 +298,7 @@ console.log(today1);
             Restaurant.find({'ActiveYn':true,'DeleteYn':false,'ActiveYn':req.params.ActiveYn,'Type':req.params.Type}).sort({"AvailableStatus":-1})
             .then(restaurants=>res.send(restaurants))
             .catch((error)=>console.log(error));
+            // socket.emit('data1',res);
           }
           else{
             console.log('hi '+req.params.ActiveYn);
@@ -336,7 +365,7 @@ console.log(today1);
 
             app.get('/carts/:UserId/:MenuId/:ProductId/:Status/:ActiveYn',(req,res)=>{
 
-
+              cartRemovedUserId=req.params.UserId;
                 Cart.find({UserId:req.params.UserId,MenuId:req.params.MenuId,ProductId:req.params.ProductId,Status:req.params.Status,ActiveYn:req.params.ActiveYn})
                 .then(carts=>res.send(carts))
                 .catch((error)=>console.log(error));
@@ -345,10 +374,10 @@ console.log(today1);
 
             app.get('/carts/:UserId/:Status/:ActiveYn',(req,res)=>{
 
+                  Cart.find({UserId:req.params.UserId,Status:req.params.Status,ActiveYn:req.params.ActiveYn})
+                  .then(carts=>res.send(carts))
+                  .catch((error)=>console.log(error));
 
-                Cart.find({UserId:req.params.UserId,Status:req.params.Status,ActiveYn:req.params.ActiveYn})
-                .then(carts=>res.send(carts))
-                .catch((error)=>console.log(error));
             });
 
             app.post('/carts',(req,res)=>{
@@ -381,12 +410,28 @@ console.log(today1);
 
 
                 app.patch('/carts', (req,res)=>{
-
-                    Cart.updateMany({Status: 'Cart',ActiveYn:true,DeleteYn:false}, {$set: {Status:req.body.Status,ActiveYn:req.body.ActiveYn,DeleteYn:req.body.DeleteYn}})
+                  if(req.body.Status=="Placed"){
+                    Cart.updateMany({Status: 'Cart',ActiveYn:true,DeleteYn:false,UserId:orderPlacedUserId}, {$set: {Status:req.body.Status,ActiveYn:req.body.ActiveYn,DeleteYn:req.body.DeleteYn}})
                     .then((carts)=> res.send(carts))
                     .catch((error)=>console.log(error));
+                  }
+                  else if(req.body.Status=="Removed"){
+                    Cart.updateMany({Status: 'Cart',ActiveYn:true,DeleteYn:false,UserId:cartRemovedUserId}, {$set: {Status:req.body.Status,ActiveYn:req.body.ActiveYn,DeleteYn:req.body.DeleteYn}})
+                    .then((carts)=> res.send(carts))
+                    .catch((error)=>console.log(error));
+                  }
+
+
 
                     }),
+
+                    app.patch('/removecarts', (req,res)=>{
+
+                      Cart.updateMany({Status: 'Cart',ActiveYn:true,DeleteYn:false,UserId:req.body.UserId}, {$set: {Status:req.body.Status,ActiveYn:req.body.ActiveYn,DeleteYn:req.body.DeleteYn}})
+                      .then((carts)=> res.send(carts))
+                      .catch((error)=>console.log(error));
+
+                      }),
 
                     app.get('/carts',(req,res)=>{
 
@@ -443,12 +488,12 @@ console.log(today1);
 
                             app.post('/orderdetails',(req,res)=>{
 
-
-                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude}))
+                              orderPlacedUserId=req.body.UserId;
+                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'DeliveryTime':req.body.DeliveryTime}))
                                 .save()
                                 .then((orderdetails)=> res.send(orderdetails))
                                 .catch((error)=>console.log(error));
-
+                                updateUserWelcomeOffer(req.body.UserId);
                             });
 
                             app.get('/orderdetails/:UserId/:Status/:ActiveYn',(req,res)=>{
@@ -726,6 +771,12 @@ function updateProducts(restId,availableStatus){
 else{}
 }
 
+function updateUserWelcomeOffer(userId){
+  Register.updateMany({_id: userId,WelcomeOffer:true}, {$set: {WelcomeOffer:false}})
+  .then()
+  .catch((error)=>console.log(error));
+}
+
 app.post('/shopCategories',(req,res)=>{
 
   console.log("save Category");
@@ -743,17 +794,26 @@ app.post('/shopCategories',(req,res)=>{
   .catch((error)=>console.log(error));
 });
 
+app.post('/maincategories',(req,res)=>{
+
+  console.log("save Main Category");
+ (new MainCategory ({'Category': req.body.Category,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'Description':req.body.Description,'AvailableStatus':req.body.AvailableStatus,'ImageUrl':req.body.ImageUrl}))
+ .save()
+ .then((maincategories)=> res.send(maincategories))
+ .catch((error)=>console.log(error));
+
+ });
+
+ app.get('/maincategories',(req,res)=>{
+
+  MainCategory.find({'ActiveYn':true,'DeleteYn':false,'AvailableStatus':true})
+  .then(maincategories=>res.send(maincategories))
+  .catch((error)=>console.log(error));
+});
+
 
 
  //app.listen(3000, () => console.log("Server is connected on port 3000"));
 const server=app.listen(port, () => console.log("Server is connected on port "+port));
 //const io=socket(server);
 
-
-// server.listen(5000,()=>{
-//   console.log("server is runnging");
-// });
-// io.on('connection',(socket)=>{
-//   console.log(`new connection id: ${socket.id}`);
-
-// });
