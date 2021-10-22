@@ -21,6 +21,9 @@ let Razorpay = require('razorpay');
 const ShopCategory=require('./database/models/shop-category');
 const Offers = require('./database/models/offers');
 const MainCategory=require('./database/models/main-category');
+const AddSlide = require('./database/models/add-slide.js');
+const BuddySlide = require('./database/models/buddy-slide.js');
+const BookingSlide = require('./database/models/bokking-slide.js');
 // const server=require('http').createServer(app);
 
 app.use(express.json());
@@ -37,29 +40,28 @@ app.use(express.urlencoded({extended:false}))
 
 
 
-// const server=app.listen(5000,()=>{
-//   console.log("server is runnging");
-// });
+//  const server=app.listen(5000,()=>{
+//    console.log("server is runnging");
+//  });
 
 
 //const io=socket(server);
 
 
-// const io=require("socket.io")(server,{cors:{origin:"*"}});
-// io.on('connection',(socket)=>{
-//   console.log(`new connection id: ${socket.id}`);
-//   SocketCheck();
-// socket.on('message',(data)=>{
+//  const io=require("socket.io")(server,{cors:{origin:"*"}});
+//  io.on('connection',(socket)=>{
+//    console.log(`new connection id: ${socket.id}`);
+//    SocketCheck();
+//  socket.on('message',(data)=>{
 //   console.log("dsafasdf socket "+data);
-// })
-// });
+//  }) });
 
 
 
 
-// function SocketCheck(){
-//   console.log("connect check function");
-// }
+//  function SocketCheck(){
+//    console.log("connect check function");
+//  }
 
 const RazorpayConfig={
   key_id:'rzp_live_BNBLXyHk09HIQZ',
@@ -811,6 +813,48 @@ app.post('/maincategories',(req,res)=>{
   .catch((error)=>console.log(error));
 });
 
+app.post('/addslides',(req,res)=>{
+
+  console.log("save add slide");
+ (new AddSlide ({'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'ImageUrl':req.body.ImageUrl}))
+ .save()
+ .then((addslides)=> res.send(addslides))
+ .catch((error)=>console.log(error));
+
+ });
+
+ app.get('/addslides',(req,res)=>{
+
+  AddSlide.find({'ActiveYn':true,'DeleteYn':false})
+  .then(addslides=>res.send(addslides))
+  .catch((error)=>console.log(error));
+});
+
+app.post('/buddyslides',(req,res)=>{
+
+  console.log("save add slide");
+ (new BuddySlide ({'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'ImageUrl':req.body.ImageUrl}))
+ .save()
+ .then((buddyslides)=> res.send(buddyslides))
+ .catch((error)=>console.log(error));
+
+ });
+ app.get('/buddyslides',(req,res)=>{
+
+  BuddySlide.find({'ActiveYn':true,'DeleteYn':false})
+  .then(buddyslides=>res.send(buddyslides))
+  .catch((error)=>console.log(error));
+});
+
+app.post('/bookingslides',(req,res)=>{
+
+  console.log("save add slide");
+ (new BookingSlide ({'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'ImageUrl':req.body.ImageUrl}))
+ .save()
+ .then((bookingslides)=> res.send(bookingslides))
+ .catch((error)=>console.log(error));
+
+ });
 
 
  //app.listen(3000, () => console.log("Server is connected on port 3000"));
