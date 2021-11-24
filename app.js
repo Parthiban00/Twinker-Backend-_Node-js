@@ -24,6 +24,7 @@ const MainCategory=require('./database/models/main-category');
 const AddSlide = require('./database/models/add-slide.js');
 const BuddySlide = require('./database/models/buddy-slide.js');
 const BookingSlide = require('./database/models/bokking-slide.js');
+const DeliveryCharge = require('./database/models/delivery-charges');
 // const server=require('http').createServer(app);
 
 app.use(express.json());
@@ -183,14 +184,29 @@ app.delete('/lists/:listId/tasks/:taskId', (req,res)=>{
 
 
         app.post('/userregisters',(req,res)=>{
-            console.log("enters backend");
+          let date_ob = new Date();
+          let hours = date_ob.getHours();
+
+
+let minutes = date_ob.getMinutes();
+
+var time=hours+":"+minutes;
+//console.log(hours + ":" + minutes);
+
+var dd = String(date_ob.getDate()).padStart(2, '0');
+var mm = String(date_ob.getMonth() + 1).padStart(2, '0'); //January is 0!
+var yyyy = date_ob.getFullYear();
+
+var today1 = yyyy + '-' + mm + '-' + dd;
+//console.log(today1);
+         //   console.log("enters backend");
 if(req.body.UserType=='D'){
 
 }
 else{
 
 
-            (new Register ({'FirstName': req.body.FirstName,'LastName':req.body.LastName,'Address':req.body.Address,'MobileNo':req.body.MobileNo,'Password':req.body.Password,'Email':req.body.Email,'Address1':req.body.Address1,'Address2':req.body.Address2,'Address3':req.body.Address3,'UserType':req.body.UserType,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'WelcomeOffer':true}))
+            (new Register ({'FirstName': req.body.FirstName,'LastName':req.body.LastName,'Address':req.body.Address,'MobileNo':req.body.MobileNo,'Password':req.body.Password,'Email':req.body.Email,'Address1':req.body.Address1,'Address2':req.body.Address2,'Address3':req.body.Address3,'UserType':req.body.UserType,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'WelcomeOffer':true,'CreatedDate':today1,'CreatedTime':time}))
             .save()
             .then((userregisters)=> res.send(userregisters))
             .catch((error)=>console.log(error));
@@ -267,8 +283,8 @@ console.log("save restaurant");
 
           console.log('get restaurants entered');
 
-          // var datetime = new Date();
-          // console.log(datetime);
+           var datetime = new Date();
+           console.log(datetime);
 
             Restaurant.find({'ActiveYn':true,'DeleteYn':false})
             .then(restaurants=>res.send(restaurants))
@@ -325,7 +341,7 @@ console.log(today1);
         app.post('/restaurants/:restId/mainmenus',(req,res)=>{
 
 
-            (new MainMenu ({'RestaurantId': req.params.restId,'MenuName':req.body.MenuName,'AvailableTime':req.body.AvailableTime,'AvailableStatus':req.body.AvailableStatus,'AvailableDays':req.body.AvailableDays,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn}))
+            (new MainMenu ({'RestaurantId': req.params.restId,'MenuName':req.body.MenuName,'AvailableTime':req.body.AvailableTime,'AvailableStatus':req.body.AvailableStatus,'AvailableDays':req.body.AvailableDays,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'ViewType':req.body.ViewType}))
             .save()
             .then((mainmenus)=> res.send(mainmenus))
             .catch((error)=>console.log(error));
@@ -385,7 +401,7 @@ console.log(today1);
             app.post('/carts',(req,res)=>{
 
 
-                (new Cart ({'RestaurantId': req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'MenuId':req.body.MenuId,'MenuName':req.body.MenuName,'ProductId':req.body.ProductId,'ProductName':req.body.ProductName,'Price':req.body.Price,'ItemCount':req.body.ItemCount,'Amount':req.body.Amount,'UserId':req.body.UserId,'UserName':req.body.UserName,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'Status':req.body.Status,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'ActualPrice':req.body.ActualPrice,'Offer':req.body.Offer,'OfferDescription':req.body.OfferDescription,'Commission':req.body.Commission,'ActualAmount':req.body.ActualAmount,'Description':req.body.Description}))
+                (new Cart ({'RestaurantId': req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'MenuId':req.body.MenuId,'MenuName':req.body.MenuName,'ProductId':req.body.ProductId,'ProductName':req.body.ProductName,'Price':req.body.Price,'ItemCount':req.body.ItemCount,'Amount':req.body.Amount,'UserId':req.body.UserId,'UserName':req.body.UserName,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'Status':req.body.Status,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'ActualPrice':req.body.ActualPrice,'Offer':req.body.Offer,'OfferDescription':req.body.OfferDescription,'Commission':req.body.Commission,'ActualAmount':req.body.ActualAmount,'Description':req.body.Description,'Type':req.body.Type}))
                 .save()
                 .then((carts)=> res.send(carts))
                 .catch((error)=>console.log(error));
@@ -413,9 +429,9 @@ console.log(today1);
 
                 app.patch('/carts', (req,res)=>{
                   if(req.body.Status=="Placed"){
-                    Cart.updateMany({Status: 'Cart',ActiveYn:true,DeleteYn:false,UserId:orderPlacedUserId}, {$set: {Status:req.body.Status,ActiveYn:req.body.ActiveYn,DeleteYn:req.body.DeleteYn}})
-                    .then((carts)=> res.send(carts))
-                    .catch((error)=>console.log(error));
+                     Cart.updateMany({Status: 'Cart',ActiveYn:true,DeleteYn:false,UserId:orderPlacedUserId}, {$set: {Status:req.body.Status,ActiveYn:req.body.ActiveYn,DeleteYn:req.body.DeleteYn}})
+                     .then((carts)=> res.send(carts))
+                     .catch((error)=>console.log(error));
                   }
                   else if(req.body.Status=="Removed"){
                     Cart.updateMany({Status: 'Cart',ActiveYn:true,DeleteYn:false,UserId:cartRemovedUserId}, {$set: {Status:req.body.Status,ActiveYn:req.body.ActiveYn,DeleteYn:req.body.DeleteYn}})
@@ -749,7 +765,7 @@ updateMainMenu(req.params.restId,req.params.menuId,req.body.availableStatus);
                                                                                                               });
                                                                                                               app.get('/categories/:type/:activeYn',(req,res)=>{
 
-                                                                                                                Category.find({Type: req.params.type,ActiveYn:req.params.activeYn,AvailableStatus:true})
+                                                                                                                Category.find({Type: req.params.type,ActiveYn:false,AvailableStatus:true})
                                                                                                                 .then(categories=>res.send(categories))
                                                                                                                 .catch((error)=>console.log(error));
                                                                                                             });
@@ -855,6 +871,21 @@ app.post('/bookingslides',(req,res)=>{
  .catch((error)=>console.log(error));
 
  });
+ app.post('/deliverycharges',(req,res)=>{
+
+  console.log("save deliverycharges");
+ (new DeliveryCharge ({'Category':req.body.Category,'MinimumDeliveryCharge':req.body.MinimumDeliveryCharge,'PerKm':req.body.PerKm,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'CategoryId':req.body.CategoryId}))
+ .save()
+ .then((deliverycharges)=> res.send(deliverycharges))
+ .catch((error)=>console.log(error));
+
+ });
+ app.get('/deliverycharges/:type',(req,res)=>{
+
+  DeliveryCharge.find({'ActiveYn':true,'DeleteYn':false,'Category':req.params.type})
+  .then(deliverycharges=>res.send(deliverycharges))
+  .catch((error)=>console.log(error));
+});
 
 
  //app.listen(3000, () => console.log("Server is connected on port 3000"));

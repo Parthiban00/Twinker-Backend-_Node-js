@@ -100,6 +100,9 @@ const TaskSchema = new mongoose.Schema({
   },
   Description:{
     type:String
+  },
+  Type:{
+    type:String
   }
 
 });
