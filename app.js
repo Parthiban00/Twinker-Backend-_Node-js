@@ -17,15 +17,16 @@ const Category = require('./database/models/category');
 const Coupons = require('./database/models/coupons');
 const { isValidObjectId } = require('mongoose');
 let Razorpay = require('razorpay');
-//const socket = require('socket.io');
+const socket = require('socket.io');
 const ShopCategory=require('./database/models/shop-category');
 const Offers = require('./database/models/offers');
 const MainCategory=require('./database/models/main-category');
 const AddSlide = require('./database/models/add-slide.js');
 const BuddySlide = require('./database/models/buddy-slide.js');
+const SpecialOffers = require('./database/models/special-offers.js');
 const BookingSlide = require('./database/models/bokking-slide.js');
 const DeliveryCharge = require('./database/models/delivery-charges');
-// const server=require('http').createServer(app);
+ //var server=require('http').createServer(app);
 
 app.use(express.json());
 // ---------------------------------new--------------
@@ -41,28 +42,51 @@ app.use(express.urlencoded({extended:false}))
 
 
 
-//  const server=app.listen(5000,()=>{
+//  server=app.listen(5000,()=>{
 //    console.log("server is runnging");
-//  });
+//   });
 
 
 //const io=socket(server);
 
 
-//  const io=require("socket.io")(server,{cors:{origin:"*"}});
-//  io.on('connection',(socket)=>{
-//    console.log(`new connection id: ${socket.id}`);
-//    SocketCheck();
-//  socket.on('message',(data)=>{
-//   console.log("dsafasdf socket "+data);
-//  }) });
+//   const io=require("socket.io")(server,{cors:{origin:"*"}});
+//   io.on('connection',(socket)=>{
+//     console.log(`new connection id: ${socket.id}`);
+//     SocketCheck();
+//   socket.on('message',(data)=>{
+//    console.log("dsafasdf socket "+data);
+//   })
+
+// socket.on('orderPlaced',(data)=>{
+//   console.log("order placed on cart "+data);
+
+//   //GetPlacedOrders();
+//   io.emit('orders',data);
+// })
+
+// socket.on('cartPageCheck',(data)=>{
+//   console.log("cart entered "+data);
+// })
+// });
 
 
 
+function GetPlacedOrders(){
+  console.log('get placed orders eneted from socket')
+  var data= OrderDetails.find({ActiveYn:true})
+  console.log("get orders---- "+typeof(data));
+  console.log("get orders length---- "+data.length);
 
-//  function SocketCheck(){
-//    console.log("connect check function");
-//  }
+  // .then(console.log(orderdetails))
+  // .catch((error)=>console.log(error));
+  //socket.emit('data1',res);
+}
+
+
+  function SocketCheck(){
+    console.log("connect check function");
+  }
 
 const RazorpayConfig={
   key_id:'rzp_live_BNBLXyHk09HIQZ',
@@ -564,7 +588,7 @@ console.log(today1);
 
                                 app.get('/orderdetails/:ActiveYn/',(req,res)=>{
 
-
+console.log('get order entered');
                                     OrderDetails.find({ActiveYn:req.params.ActiveYn})
                                     .then(orderdetails=>res.send(orderdetails))
                                     .catch((error)=>console.log(error));
@@ -886,6 +910,22 @@ app.post('/bookingslides',(req,res)=>{
   .then(deliverycharges=>res.send(deliverycharges))
   .catch((error)=>console.log(error));
 });
+
+                                                                               app.post('/specialoffers',(req,res)=>{
+
+                                                                                                      console.log("save Offers");
+                                                                                                                  (new SpecialOffers ({'Category': req.body.Category,'ImageUrl':req.body.ImageUrl,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'AvailableStatus':req.body.AvailableStatus}))
+                                                                                                                  .save()
+                                                                                                                  .then((specialoffers)=> res.send(specialoffers))
+                                                                                                                  .catch((error)=>console.log(error));
+
+                                                                                                              });
+                                                                                                              app.get('/specialoffers/:type/:activeYn',(req,res)=>{
+
+                                                                                                                SpecialOffers.find({Type: req.params.type,ActiveYn:true,AvailableStatus:true})
+                                                                                                                .then(specialoffers=>res.send(specialoffers))
+                                                                                                                .catch((error)=>console.log(error));
+                                                                                                            });
 
 
  //app.listen(3000, () => console.log("Server is connected on port 3000"));
