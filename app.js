@@ -26,6 +26,7 @@ const BuddySlide = require('./database/models/buddy-slide.js');
 const SpecialOffers = require('./database/models/special-offers.js');
 const BookingSlide = require('./database/models/bokking-slide.js');
 const DeliveryCharge = require('./database/models/delivery-charges');
+const SpecificCategory = require('./database/models/specific-category');
  //var server=require('http').createServer(app);
 
 app.use(express.json());
@@ -796,6 +797,8 @@ updateMainMenu(req.params.restId,req.params.menuId,req.body.availableStatus);
 
 
 
+
+
 function updateMainMenu(restId,menuId,availableStatus){
   console.log('udate main menu entered'+restId)
   MainMenu.updateMany({RestaurantId: restId,_id:menuId}, {$set: {AvailableStatus:availableStatus}})
@@ -926,6 +929,22 @@ app.post('/bookingslides',(req,res)=>{
                                                                                                                 .then(specialoffers=>res.send(specialoffers))
                                                                                                                 .catch((error)=>console.log(error));
                                                                                                             });
+
+                                                                                                            app.post('/specificcategories',(req,res)=>{
+
+                                                                                                              console.log("save Category");
+                                                                                                                          (new SpecificCategory ({'Category': req.body.Category,'ImageUrl':req.body.ImageUrl,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'AvailableStatus':req.body.AvailableStatus}))
+                                                                                                                          .save()
+                                                                                                                          .then((specificcategories)=> res.send(specificcategories))
+                                                                                                                          .catch((error)=>console.log(error));
+        
+                                                                                                                      });
+                                                                                                                      app.get('/specificcategories/:type/:activeYn',(req,res)=>{
+        
+                                                                                                                        SpecificCategory.find({Type: req.params.type,ActiveYn:true,AvailableStatus:true})
+                                                                                                                        .then(specificcategories=>res.send(specificcategories))
+                                                                                                                        .catch((error)=>console.log(error));
+                                                                                                                    });
 
 
  //app.listen(3000, () => console.log("Server is connected on port 3000"));

@@ -28,6 +28,9 @@ const TaskSchema = new mongoose.Schema({
     },
     CategoryId:{
       type:String
+    },
+    Around:{
+      type:Number
     }
 
 
