@@ -33,7 +33,7 @@ const Locality = require('./database/models/locality');
  var url = "mongodb://localhost:27017/";
 app.use(express.json());
 // ---------------------------------new--------------
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 9000;
 
 
 
