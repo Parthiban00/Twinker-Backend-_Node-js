@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const TaskSchema = new mongoose.Schema({
-
+_id:{
+type: mongoose.Types.ObjectId
+},
     FirstName: {
 
         type: String,
@@ -62,6 +64,9 @@ const TaskSchema = new mongoose.Schema({
     },
     CreatedTime:{
       type:String
+    },
+    Locality:{
+        type:String
     }
 
 });

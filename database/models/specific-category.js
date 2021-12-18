@@ -29,6 +29,9 @@ const TaskSchema = new mongoose.Schema({
 
     AvailableStatus:{
       type:Boolean
+    },
+    BannerImage:{
+        type:String
     }
 
 

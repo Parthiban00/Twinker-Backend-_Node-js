@@ -27,8 +27,10 @@ const SpecialOffers = require('./database/models/special-offers.js');
 const BookingSlide = require('./database/models/bokking-slide.js');
 const DeliveryCharge = require('./database/models/delivery-charges');
 const SpecificCategory = require('./database/models/specific-category');
+const Locality = require('./database/models/locality');
  //var server=require('http').createServer(app);
-
+ var MongoClient = require('mongodb').MongoClient;
+ var url = "mongodb://localhost:27017/";
 app.use(express.json());
 // ---------------------------------new--------------
 const port = process.env.PORT || 5000;
@@ -43,45 +45,73 @@ app.use(express.urlencoded({extended:false}))
 
 
 
-//  server=app.listen(5000,()=>{
-//    console.log("server is runnging");
-//   });
+  server=app.listen(port,()=>{
+    console.log("server is runnging "+port);
+   });
 
 
 //const io=socket(server);
 
 
-//   const io=require("socket.io")(server,{cors:{origin:"*"}});
-//   io.on('connection',(socket)=>{
-//     console.log(`new connection id: ${socket.id}`);
-//     SocketCheck();
-//   socket.on('message',(data)=>{
-//    console.log("dsafasdf socket "+data);
-//   })
+   const io=require("socket.io")(server,{cors:{origin:"*"}});
+   io.on('connection',(socket)=>{
+     console.log(`new connection id: ${socket.id}`);
+    
+ socket.on('JoinRoom',function(data){
+console.log(data.room+' '+data.user);
 
-// socket.on('orderPlaced',(data)=>{
-//   console.log("order placed on cart "+data);
 
-//   //GetPlacedOrders();
-//   io.emit('orders',data);
-// })
+ socket.join(data.room);
 
-// socket.on('cartPageCheck',(data)=>{
-//   console.log("cart entered "+data);
-// })
-// });
+//  MongoClient.connect(url, function(err, db) {
+//   if (err) throw err;
+//   var dbo = db.db("twinkertest");
+//   dbo.collection("orderdetails").find({"Status":"Placed","ActiveYn":true}).toArray(function(err, result) {
+//     if (err) throw err;
+  
+//     socket.broadcast.to(data.room).emit('NewOrderPlaced',{data:result});
+//     db.close();
+//   });
+// }); 
+
+
+
+
+
+
+socket.on('OrderPlaced',function(data){
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("twinkertest");
+    dbo.collection("orderdetails").find({"Status":"Placed","ActiveYn":true}).toArray(function(err, result) {
+      if (err) throw err;
+    
+      socket.broadcast.to(data.room).emit('NewOrderPlaced',{data:result});
+      db.close();
+    });
+  }); 
+})
+ })
+
+ 
+});
 
 
 
 function GetPlacedOrders(){
-  console.log('get placed orders eneted from socket')
-  var data= OrderDetails.find({ActiveYn:true})
-  console.log("get orders---- "+typeof(data));
-  console.log("get orders length---- "+data.length);
-
-  // .then(console.log(orderdetails))
-  // .catch((error)=>console.log(error));
-  //socket.emit('data1',res);
+var placedOrder;
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("twinkertest");
+    dbo.collection("orderdetails").find({}).toArray(function(err, result) {
+      if (err) throw err;
+    //  console.log(result);
+      placedOrder=result;
+      db.close();
+    });
+  }); 
+ return placedOrder;
+  
 }
 
 
@@ -532,11 +562,22 @@ console.log(today1);
                             app.post('/orderdetails',(req,res)=>{
 
                               orderPlacedUserId=req.body.UserId;
-                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'DeliveryTime':req.body.DeliveryTime}))
+                              console.log(req.body.Locality);
+console.log(req.body.DeliveryPartnerDetails);
+                              if(req.body.DeliveryPartnerDetails==undefined || req.body.DeliveryPartnerDetails==null || req.body.DeliveryPartnerDetails==""){
+                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'DeliveryTime':req.body.DeliveryTime,'Locality':req.body.Locality,DeliveryPartnerDetails:{'UserId':""}}))
                                 .save()
                                 .then((orderdetails)=> res.send(orderdetails))
                                 .catch((error)=>console.log(error));
                                 updateUserWelcomeOffer(req.body.UserId);
+                              }
+                              else{
+                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'DeliveryTime':req.body.DeliveryTime,'Locality':req.body.Locality,DeliveryPartnerDetails:req.body.DeliveryPartnerDetails}))
+                                .save()
+                                .then((orderdetails)=> res.send(orderdetails))
+                                .catch((error)=>console.log(error));
+                                updateUserWelcomeOffer(req.body.UserId);
+                              }
                             });
 
                             app.get('/orderdetails/:UserId/:Status/:ActiveYn',(req,res)=>{
@@ -594,6 +635,14 @@ console.log('get order entered');
                                     .then(orderdetails=>res.send(orderdetails))
                                     .catch((error)=>console.log(error));
                                 });
+
+                                app.get('/deliveryboy/orderdetails/:ActiveYn/:Locality',(req,res)=>{
+
+                                  console.log('get order entered 111');
+                                                                      OrderDetails.find({ActiveYn:req.params.ActiveYn,Locality:req.params.Locality})
+                                                                      .then(orderdetails=>res.send(orderdetails))
+                                                                      .catch((error)=>console.log(error));
+                                                                  });
 
                                 app.get('/orderdetails',(req,res)=>{
 
@@ -946,8 +995,46 @@ app.post('/bookingslides',(req,res)=>{
                                                                                                                         .catch((error)=>console.log(error));
                                                                                                                     });
 
+                                                                                                                    app.get('/specificcategories/:type/:activeYn/:category',(req,res)=>{
+        
+                                                                                                                      SpecificCategory.find({Type: req.params.type,ActiveYn:true,AvailableStatus:true,Category:req.params.category})
+                                                                                                                      .then(specificcategories=>res.send(specificcategories))
+                                                                                                                      .catch((error)=>console.log(error));
+                                                                                                                  });
+
+                                                                                                                    app.post('/localities',(req,res)=>{
+
+                                                                                                                      console.log("save locality");
+                                                                                                                                  (new Locality ({'Locality': req.body.Locality,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'AvailableStatus':req.body.AvailableStatus}))
+                                                                                                                                  .save()
+                                                                                                                                  .then((localities)=> res.send(localities))
+                                                                                                                                  .catch((error)=>console.log(error));
+                
+                                                                                                                              });
+                                                                                                                              app.get('/localities',(req,res)=>{
+        
+                                                                                                                                Locality.find({ActiveYn:true,AvailableStatus:true}).sort({"Locality":1})
+                                                                                                                                .then(localities=>res.send(localities))
+                                                                                                                                .catch((error)=>console.log(error));
+                                                                                                                            });
+
+                                                                                                                            app.patch('/userregisters/location/:id', (req,res)=>{
+                                                                                                                              console.log('Update users location '+req.body.Locality);
+                                                                                                                              Register.findOneAndUpdate({_id: req.params.id}, {$set:{Address1:req.body.address,Locality:req.body.locality}})
+                                                                                                                              .then((userregister)=> res.send(userregister))
+                                                                                                                              .catch((error)=>console.log(error));
+                                                                                                                        
+                                                                                                                              })
+
+                                                                                                                              app.get('/deliveryboys/:locality',(req,res)=>{
+        console.log("get delivery boy entered");
+                                                                                                                                Register.find({ActiveYn:true,UserType:'D',ActiveStatus:true,Locality:req.params.locality})
+                                                                                                                                .then(userregister=>res.send(userregister))
+                                                                                                                                .catch((error)=>console.log(error));
+                                                                                                                            });
+
 
  //app.listen(3000, () => console.log("Server is connected on port 3000"));
-const server=app.listen(port, () => console.log("Server is connected on port "+port));
+//const server=app.listen(port, () => console.log("Server is connected on port "+port));
 //const io=socket(server);
 
