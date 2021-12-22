@@ -30,7 +30,8 @@ const SpecificCategory = require('./database/models/specific-category');
 const Locality = require('./database/models/locality');
  //var server=require('http').createServer(app);
  var MongoClient = require('mongodb').MongoClient;
- var url = "mongodb://localhost:27017/";
+ //var url = "mongodb://localhost:27017/";
+var url="mongodb://twinkeruser:qwertyramparthi@207.180.242.26:27017/twinkertest?authSource=twinkertest&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 app.use(express.json());
 // ---------------------------------new--------------
 const port = process.env.PORT || 9000;
@@ -87,6 +88,20 @@ socket.on('OrderPlaced',function(data){
       if (err) throw err;
     
       socket.broadcast.to(data.room).emit('NewOrderPlaced',{data:result});
+      db.close();
+    });
+  }); 
+})
+
+socket.on('OrderAccepted',function(data){
+  console.log("user Id "+data.orderUserId)
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("twinkertest");
+    dbo.collection("orderdetails").find({ Status : { $nin: ["Canceled by Customer","Completed"] },"UserId":mongoose.Types.ObjectId(data.orderUserId)}).toArray(function(err, result) {
+      if (err) throw err;
+    
+      socket.broadcast.to(data.room).emit('OrderAccepted',{data:result});
       db.close();
     });
   }); 

@@ -68,6 +68,7 @@ type: mongoose.Types.ObjectId
     Locality:{
         type:String
     }
+    
 
 });
 
