@@ -31,6 +31,10 @@ const TaskSchema = new mongoose.Schema({
       type: Number,
 
   },
+  Locality:{
+      type:String
+  }
+
 
 
 

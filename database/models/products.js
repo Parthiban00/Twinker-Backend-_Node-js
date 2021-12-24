@@ -91,6 +91,9 @@ const TaskSchema = new mongoose.Schema({
   },
   RestaurantName:{
     type:String
+  },
+  Recommended:{
+    type:Boolean
   }
 
 

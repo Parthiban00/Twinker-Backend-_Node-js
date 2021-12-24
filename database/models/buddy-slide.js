@@ -22,6 +22,10 @@ const TaskSchema = new mongoose.Schema({
         type: Boolean,
 
     },
+    Locality:{
+        type:String
+    }
+
 
 
 

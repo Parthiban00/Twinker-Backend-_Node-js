@@ -34,7 +34,11 @@ const TaskSchema = new mongoose.Schema({
     },
     AvailableStatus:{
       type:Boolean
+    },
+    Locality:{
+        type:String
     }
+
 
 
 

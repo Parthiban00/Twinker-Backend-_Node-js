@@ -40,7 +40,11 @@ const TaskSchema = new mongoose.Schema({
   },
   ImageUrl:{
     type:String
+  },
+  Locality:{
+      type:String
   }
+
 
 
 

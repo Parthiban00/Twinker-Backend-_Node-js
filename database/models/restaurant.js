@@ -111,7 +111,11 @@ type:String
     },
     DeliveryTime:{
       type:Number
+    },
+    Locality:{
+        type:String
     }
+
 
 
 

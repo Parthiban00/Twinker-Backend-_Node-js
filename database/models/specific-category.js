@@ -32,7 +32,11 @@ const TaskSchema = new mongoose.Schema({
     },
     BannerImage:{
         type:String
+    },
+    Locality:{
+        type:String
     }
+
 
 
 

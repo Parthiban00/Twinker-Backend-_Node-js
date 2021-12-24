@@ -362,7 +362,7 @@ console.log("save restaurant");
         });
 
 
-        app.get('/restaurants/:ActiveYn/:Type',(req,res)=>{
+        app.get('/restaurants/:ActiveYn/:Type/:locality',(req,res)=>{
           let date_ob = new Date();
           let hours = date_ob.getHours();
 
@@ -383,7 +383,7 @@ console.log(today1);
           console.log('get restaurants entered');
 
           if(req.params.ActiveYn=="true" || req.params.ActiveYn=="false" ){
-            Restaurant.find({'ActiveYn':true,'DeleteYn':false,'ActiveYn':req.params.ActiveYn,'Type':req.params.Type}).sort({"AvailableStatus":-1})
+            Restaurant.find({'ActiveYn':true,'DeleteYn':false,'ActiveYn':req.params.ActiveYn,'Type':req.params.Type,'Locality':req.params.locality}).sort({"AvailableStatus":-1})
             .then(restaurants=>res.send(restaurants))
             .catch((error)=>console.log(error));
             // socket.emit('data1',res);
@@ -418,7 +418,7 @@ console.log(today1);
 
         });
 
-        app.get('/restaurants/:restId/:activeYn/mainmenus',(req,res)=>{
+        app.get('/restaurants/:restId/:activeYn/mainmenus/get',(req,res)=>{
           console.log("main menu entered");
 
             MainMenu.find({RestaurantId: req.params.restId,ActiveYn:req.params.activeYn}).sort({"AvailableStatus":-1})
@@ -436,7 +436,7 @@ console.log(today1);
 
         });
 
-        app.get('/restaurants/:restId/mainmenus/products',(req,res)=>{
+        app.get('/restaurants/:restId/mainmenus/products/get',(req,res)=>{
 
             Products.find({RestaurantId: req.params.restId}).sort({"AvailableStatus":-1})
             .then(Products=>res.send(Products))
@@ -761,9 +761,9 @@ console.log("suggestion entered");
                                                                                         });
 
 
-                                                          app.get('/offers',(req,res)=>{
+                                                          app.get('/offers/:locality',(req,res)=>{
                                                             console.log("offers entered");
-                                                                                            Offers.find({ActiveYn: true,DeleteYn:false})
+                                                                                            Offers.find({ActiveYn: true,DeleteYn:false,Locality:req.params.locality})
                                                                                             .then(Offers=>res.send(Offers))
                                                                                             .catch((error)=>console.log(error));
                                                                                         });
@@ -846,15 +846,15 @@ updateMainMenu(req.params.restId,req.params.menuId,req.body.availableStatus);
                                                                                                     app.post('/categories',(req,res)=>{
 
                                                                                                       console.log("save Category");
-                                                                                                                  (new Category ({'Category': req.body.Category,'ImageUrl':req.body.ImageUrl,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'AvailableStatus':req.body.AvailableStatus}))
+                                                                                                                  (new Category ({'Category': req.body.Category,'ImageUrl':req.body.ImageUrl,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'AvailableStatus':req.body.AvailableStatus,'Locality':req.body.Locality}))
                                                                                                                   .save()
                                                                                                                   .then((categories)=> res.send(categories))
                                                                                                                   .catch((error)=>console.log(error));
 
                                                                                                               });
-                                                                                                              app.get('/categories/:type/:activeYn',(req,res)=>{
+                                                                                                              app.get('/categories/:type/:activeYn/:locality',(req,res)=>{
 
-                                                                                                                Category.find({Type: req.params.type,ActiveYn:false,AvailableStatus:true})
+                                                                                                                Category.find({Type: req.params.type,ActiveYn:false,AvailableStatus:true,Locality:req.params.locality})
                                                                                                                 .then(categories=>res.send(categories))
                                                                                                                 .catch((error)=>console.log(error));
                                                                                                             });
@@ -923,16 +923,16 @@ app.post('/maincategories',(req,res)=>{
 app.post('/addslides',(req,res)=>{
 
   console.log("save add slide");
- (new AddSlide ({'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'ImageUrl':req.body.ImageUrl}))
+ (new AddSlide ({'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'ImageUrl':req.body.ImageUrl,'Locality':req.body.Locality}))
  .save()
  .then((addslides)=> res.send(addslides))
  .catch((error)=>console.log(error));
 
  });
 
- app.get('/addslides',(req,res)=>{
+ app.get('/addslides/:locality',(req,res)=>{
 
-  AddSlide.find({'ActiveYn':true,'DeleteYn':false})
+  AddSlide.find({'ActiveYn':true,'DeleteYn':false,'Locality':req.params.locality})
   .then(addslides=>res.send(addslides))
   .catch((error)=>console.log(error));
 });
@@ -946,9 +946,9 @@ app.post('/buddyslides',(req,res)=>{
  .catch((error)=>console.log(error));
 
  });
- app.get('/buddyslides',(req,res)=>{
+ app.get('/buddyslides/:locality',(req,res)=>{
 
-  BuddySlide.find({'ActiveYn':true,'DeleteYn':false})
+  BuddySlide.find({'ActiveYn':true,'DeleteYn':false,'Locality':req.params.locality})
   .then(buddyslides=>res.send(buddyslides))
   .catch((error)=>console.log(error));
 });
@@ -981,15 +981,15 @@ app.post('/bookingslides',(req,res)=>{
                                                                                app.post('/specialoffers',(req,res)=>{
 
                                                                                                       console.log("save Offers");
-                                                                                                                  (new SpecialOffers ({'Category': req.body.Category,'ImageUrl':req.body.ImageUrl,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'AvailableStatus':req.body.AvailableStatus}))
+                                                                                                                  (new SpecialOffers ({'Category': req.body.Category,'ImageUrl':req.body.ImageUrl,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'AvailableStatus':req.body.AvailableStatus,'Locality':req.body.Locality}))
                                                                                                                   .save()
                                                                                                                   .then((specialoffers)=> res.send(specialoffers))
                                                                                                                   .catch((error)=>console.log(error));
 
                                                                                                               });
-                                                                                                              app.get('/specialoffers/:type/:activeYn',(req,res)=>{
+                                                                                                              app.get('/specialoffers/:type/:activeYn/:locality',(req,res)=>{
 
-                                                                                                                SpecialOffers.find({Type: req.params.type,ActiveYn:true,AvailableStatus:true})
+                                                                                                                SpecialOffers.find({Type: req.params.type,ActiveYn:true,AvailableStatus:true,Locality:req.params.locality})
                                                                                                                 .then(specialoffers=>res.send(specialoffers))
                                                                                                                 .catch((error)=>console.log(error));
                                                                                                             });
@@ -997,7 +997,7 @@ app.post('/bookingslides',(req,res)=>{
                                                                                                             app.post('/specificcategories',(req,res)=>{
 
                                                                                                               console.log("save Category");
-                                                                                                                          (new SpecificCategory ({'Category': req.body.Category,'ImageUrl':req.body.ImageUrl,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'AvailableStatus':req.body.AvailableStatus}))
+                                                                                                                          (new SpecificCategory ({'Category': req.body.Category,'ImageUrl':req.body.ImageUrl,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'AvailableStatus':req.body.AvailableStatus,'Locality':req.body.Locality}))
                                                                                                                           .save()
                                                                                                                           .then((specificcategories)=> res.send(specificcategories))
                                                                                                                           .catch((error)=>console.log(error));
