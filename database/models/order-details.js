@@ -81,6 +81,9 @@ const TaskSchema = new mongoose.Schema({
         type:Object,
 
     },
+    PaymentDetails:{
+        type:Object,
+    },
     ModifiedBy:{
         type:Array
     },
@@ -121,6 +124,9 @@ type:Array
       type:Number
     },
     Locality:{
+        type:String
+    },
+    Suggestions:{
         type:String
     }
 

@@ -274,7 +274,7 @@ if(req.body.UserType=='D'){
 
 }
 else{
-
+console.log("user registered else part entered");
 
             (new Register ({'FirstName': req.body.FirstName,'LastName':req.body.LastName,'Address':req.body.Address,'MobileNo':req.body.MobileNo,'Password':req.body.Password,'Email':req.body.Email,'Address1':req.body.Address1,'Address2':req.body.Address2,'Address3':req.body.Address3,'UserType':req.body.UserType,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'WelcomeOffer':true,'CreatedDate':today1,'CreatedTime':time}))
             .save()
@@ -406,7 +406,14 @@ console.log(today1);
             .then(restaurants=>res.send(restaurants))
             .catch((error)=>console.log(error));
         });
+        
+        app.get('/restaurants/specificcategory/:activeYn/:type/:locality/:availableStatus',(req,res)=>{
+          console.log('get rest parhtiban');
 
+          Restaurant.find({ActiveYn:true,DeleteYn:false,Type:req.params.type,Locality:req.params.locality,AvailableStatus:true})
+          .then(restaurants=>res.send(restaurants))
+          .catch((error)=>console.log(error));
+      });
 
         app.post('/restaurants/:restId/mainmenus',(req,res)=>{
 
@@ -577,17 +584,18 @@ console.log(today1);
                             app.post('/orderdetails',(req,res)=>{
 
                               orderPlacedUserId=req.body.UserId;
-                              console.log(req.body.Locality);
-console.log(req.body.DeliveryPartnerDetails);
+                           //   console.log(req.body.Locality);
+//console.log(req.body.DeliveryPartnerDetails);
                               if(req.body.DeliveryPartnerDetails==undefined || req.body.DeliveryPartnerDetails==null || req.body.DeliveryPartnerDetails==""){
-                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'DeliveryTime':req.body.DeliveryTime,'Locality':req.body.Locality,DeliveryPartnerDetails:{'UserId':""}}))
+                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'Locality':req.body.Locality,DeliveryPartnerDetails:{'UserId':""}}))
                                 .save()
                                 .then((orderdetails)=> res.send(orderdetails))
                                 .catch((error)=>console.log(error));
                                 updateUserWelcomeOffer(req.body.UserId);
                               }
                               else{
-                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'DeliveryTime':req.body.DeliveryTime,'Locality':req.body.Locality,DeliveryPartnerDetails:req.body.DeliveryPartnerDetails}))
+                                //console.log("payment detials "+req.body.PaymentDetails.Status)
+                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'Locality':req.body.Locality,DeliveryPartnerDetails:req.body.DeliveryPartnerDetails,Suggestions:req.body.Suggestions,PaymentDetails:req.body.PaymentDetails}))
                                 .save()
                                 .then((orderdetails)=> res.send(orderdetails))
                                 .catch((error)=>console.log(error));
@@ -767,6 +775,13 @@ console.log("suggestion entered");
                                                                                             .then(Offers=>res.send(Offers))
                                                                                             .catch((error)=>console.log(error));
                                                                                         });
+
+                                                                                        app.get('/offers/:locality/:restId',(req,res)=>{
+                                                                                          console.log("offers entered for restaurant");
+                                                                                                                          Offers.find({ActiveYn: true,DeleteYn:false,Locality:req.params.locality,$or:[{RestaurantId:req.params.restId},{RestaurantId:'All'}]})
+                                                                                                                          .then(Offers=>res.send(Offers))
+                                                                                                                          .catch((error)=>console.log(error));
+                                                                                                                      });
 
                                                           app.post('/coupons',(req,res)=>{
 
@@ -1011,7 +1026,7 @@ app.post('/bookingslides',(req,res)=>{
                                                                                                                     });
 
                                                                                                                     app.get('/specificcategories/:type/:activeYn/:category',(req,res)=>{
-        
+        console.log(req.params.category);
                                                                                                                       SpecificCategory.find({Type: req.params.type,ActiveYn:true,AvailableStatus:true,Category:req.params.category})
                                                                                                                       .then(specificcategories=>res.send(specificcategories))
                                                                                                                       .catch((error)=>console.log(error));

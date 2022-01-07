@@ -110,7 +110,7 @@ type:String
       type:String
     },
     DeliveryTime:{
-      type:Number
+      type:String
     },
     Locality:{
         type:String

@@ -94,7 +94,16 @@ const TaskSchema = new mongoose.Schema({
   },
   Recommended:{
     type:Boolean
-  }
+  },
+  Badge:{
+    type:Boolean
+  },
+
+     BadgeDescription:{
+       type:String
+     },
+     Type:{
+       type:String}
 
 
 });
