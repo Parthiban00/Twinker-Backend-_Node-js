@@ -1009,6 +1009,13 @@ app.post('/bookingslides',(req,res)=>{
                                                                                                                 .catch((error)=>console.log(error));
                                                                                                             });
 
+                                                                                                            app.get('/specialoffersall/:activeYn/:locality',(req,res)=>{
+
+                                                                                                              SpecialOffers.find({ActiveYn:true,AvailableStatus:true,Locality:req.params.locality})
+                                                                                                              .then(specialoffers=>res.send(specialoffers))
+                                                                                                              .catch((error)=>console.log(error));
+                                                                                                          });
+
                                                                                                             app.post('/specificcategories',(req,res)=>{
 
                                                                                                               console.log("save Category");
