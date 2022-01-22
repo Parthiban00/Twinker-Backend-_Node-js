@@ -102,8 +102,13 @@ const TaskSchema = new mongoose.Schema({
      BadgeDescription:{
        type:String
      },
-     Type:{
-       type:String}
+     Category:{
+       type:String},
+       
+       ActualPrice:{
+         type:Number
+       }
+
 
 
 });

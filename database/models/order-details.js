@@ -128,6 +128,9 @@ type:Array
     },
     Suggestions:{
         type:String
+    },
+    Type:{
+        type:String
     }
 
 
