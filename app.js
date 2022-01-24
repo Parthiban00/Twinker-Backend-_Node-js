@@ -662,13 +662,22 @@ console.log('get order entered');
                                     .catch((error)=>console.log(error));
                                 });
 
-                                app.get('/deliveryboy/orderdetails/:ActiveYn/:Locality/:CreatedDate',(req,res)=>{
+                                app.get('/deliveryboy/orderdetails/:ActiveYn/:Locality',(req,res)=>{
 
                                   console.log('get order entered 111');
-                                                                      OrderDetails.find({ActiveYn:req.params.ActiveYn,Locality:req.params.Locality,CreatedDate:req.params.CreatedDate})
+                                                                      OrderDetails.find({ActiveYn:req.params.ActiveYn,Locality:req.params.Locality})
                                                                       .then(orderdetails=>res.send(orderdetails))
                                                                       .catch((error)=>console.log(error));
                                                                   });
+
+
+                                                                  app.get('/deliveryboy/orderdetails/:ActiveYn/:Locality/:CreatedDate',(req,res)=>{
+
+                                                                    console.log('get order entered 111');
+                                                                                                        OrderDetails.find({ActiveYn:req.params.ActiveYn,Locality:req.params.Locality,CreatedDate:req.params.CreatedDate})
+                                                                                                        .then(orderdetails=>res.send(orderdetails))
+                                                                                                        .catch((error)=>console.log(error));
+                                                                                                    });
 
                                 app.get('/orderdetails',(req,res)=>{
 
