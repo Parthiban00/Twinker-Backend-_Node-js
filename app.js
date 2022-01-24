@@ -30,6 +30,7 @@ const DeliveryCharge = require('./database/models/delivery-charges');
 const SpecificCategory = require('./database/models/specific-category');
 const Locality = require('./database/models/locality');
 const BuddyOrders = require('./database/models/buddy-orders');
+const BuddyBanner = require('./database/models/buddy-banner');
  //var server=require('http').createServer(app);
  var MongoClient = require('mongodb').MongoClient;
  //var url = "mongodb://localhost:27017/";
@@ -653,7 +654,7 @@ console.log(today1);
 
                                   }),
 
-                                app.get('/orderdetails/:ActiveYn/',(req,res)=>{
+                                app.get('/orderdetails/:ActiveYn',(req,res)=>{
 
 console.log('get order entered');
                                     OrderDetails.find({ActiveYn:req.params.ActiveYn})
@@ -661,10 +662,10 @@ console.log('get order entered');
                                     .catch((error)=>console.log(error));
                                 });
 
-                                app.get('/deliveryboy/orderdetails/:ActiveYn/:Locality',(req,res)=>{
+                                app.get('/deliveryboy/orderdetails/:ActiveYn/:Locality/:CreatedDate',(req,res)=>{
 
                                   console.log('get order entered 111');
-                                                                      OrderDetails.find({ActiveYn:req.params.ActiveYn,Locality:req.params.Locality})
+                                                                      OrderDetails.find({ActiveYn:req.params.ActiveYn,Locality:req.params.Locality,CreatedDate:req.params.CreatedDate})
                                                                       .then(orderdetails=>res.send(orderdetails))
                                                                       .catch((error)=>console.log(error));
                                                                   });
@@ -964,6 +965,23 @@ app.post('/addslides',(req,res)=>{
 
  });
 
+ app.post('/buddybanners',(req,res)=>{
+
+  console.log("save buddy banners");
+ (new BuddyBanner ({'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Type':req.body.Type,'ImageUrl':req.body.ImageUrl,'Locality':req.body.Locality}))
+ .save()
+ .then((buddybanners)=> res.send(buddybanners))
+ .catch((error)=>console.log(error));
+
+ });
+
+ app.get('/buddybanners/:locality',(req,res)=>{
+
+  BuddyBanner.find({'ActiveYn':true,'DeleteYn':false,'Locality':req.params.locality})
+  .then(buddybanners=>res.send(buddybanners))
+  .catch((error)=>console.log(error));
+});
+
  app.get('/addslides/:locality',(req,res)=>{
 
   AddSlide.find({'ActiveYn':true,'DeleteYn':false,'Locality':req.params.locality})
@@ -1106,13 +1124,21 @@ app.post('/bookingslides',(req,res)=>{
     
     var today1 = yyyy + '-' + mm + '-' + dd;
 
-              (new BuddyOrders ({'OrderDetails': req.body.OrderDetails,'CreatedDate':today1,'CreatedTime':time,'Status':req.body.Status,'BuddyStatus':req.body.BuddyStatus,'ActiveYn':true,'DeleteYn':false,'Locality':req.body.Locality,'Type':'Buddy Order'}))
+              (new BuddyOrders ({'OrderDetails': req.body.OrderDetails,'CreatedDate':today1,'CreatedTime':time,'Status':req.body.Status,'BuddyStatus':req.body.BuddyStatus,'ActiveYn':true,'DeleteYn':false,'Locality':req.body.Locality,'Type':'Buddy Order','UserDetails':req.body.UserDetails}))
               .save()
               .then((buddyorders)=> res.send(buddyorders))
               .catch((error)=>console.log(error));
 
           });
 
+          
+          app.get('/buddyorders/:Locality/:CreatedDate',(req,res)=>{
+
+console.log("get buddy orders" + req.params.Locality+' created date '+req.params.CreatedDate)
+            BuddyOrders.find({ActiveYn:true,Locality:req.params.Locality,CreatedDate:req.params.CreatedDate})
+            .then(buddyorders=>res.send(buddyorders))
+            .catch((error)=>console.log(error));
+        });
 
  //app.listen(3000, () => console.log("Server is connected on port 3000"));
 //const server=app.listen(port, () => console.log("Server is connected on port "+port));

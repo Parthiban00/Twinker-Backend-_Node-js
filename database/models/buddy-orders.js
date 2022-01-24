@@ -40,6 +40,9 @@ type:Object
   },
   Type:{
 type:String
+  },
+  UserDetails:{
+      type:Object
   }
 
 });
