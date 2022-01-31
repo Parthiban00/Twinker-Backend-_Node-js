@@ -438,7 +438,7 @@ console.log(today1);
 
         app.post('/restaurants/:restId/mainmenus/:menuId/products',(req,res)=>{
 
-
+console.log(req.body.ImageUrl);
             (new Products ({'RestaurantId': req.params.restId,'MenuId':req.params.menuId,'ProductName':req.body.ProductName,'Price':req.body.Price,'Size':req.body.Size,'Description':req.body.Description,'AvailableTime':req.body.AvailableTime,'AvailableStatus':req.body.AvailableStatus,'AvailableDays':req.body.AvailableDays,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Offer':req.body.Offer,'OfferPrice':req.body.OfferPrice,'OfferDescription':req.body.OfferDescription,'Commission':req.body.Commission,'Suggestion':req.body.Suggestion,'Sort':req.body.Sort,'ItemCount':req.body.ItemCount,'ImageUrl':req.body.ImageUrl,'Amount':req.body.Amount,'ActualAmount':req.body.ActualAmount,'RestaurantName':req.body.RestaurantName,'Category':req.body.Category,'Badge':req.body.Badge,'BadgeDescription':req.body.BadgeDescription,'Recommended':req.body.Recommended,'ActualPrice':req.body.ActualPrice}))
             .save()
             .then((Products)=> res.send(Products))
@@ -455,11 +455,27 @@ console.log(today1);
 
 
         app.patch('/products/:productId', (req,res)=>{
-            Products.findOneAndUpdate({_id: req.params.productId}, {$set: req.body})
+            Products.findOneAndUpdate({_id: req.params.productId}, {$set: {ProductName:req.body.ProductName,Description:req.body.Description,Price:req.body.Price,Recommended:req.body.Recommended,Suggestion:req.body.Suggestion}})
             .then((products)=> res.send(products))
             .catch((error)=>console.log(error));
 
             }),
+
+              app.patch('/mainmenus/:menuId', (req,res)=>{
+                console.log('main menu update entered '+req.body.ViewType+' id '+req.params.menuId)
+            MainMenu.findOneAndUpdate({_id: req.params.menuId}, {$set: {MenuName:req.body.MenuName,ViewType:req.body.ViewType}})
+            .then((mainmenus)=> res.send(mainmenus))
+            .catch((error)=>console.log(error));
+
+            }),
+
+            app.patch('/delete/mainmenus/:menuId', (req,res)=>{
+              console.log('main menu delete entered '+req.params.menuId)
+          MainMenu.findOneAndUpdate({_id: req.params.menuId}, {$set: {ActiveYn:false,DeleteYn:true}})
+          .then((mainmenus)=> res.send(mainmenus))
+          .catch((error)=>console.log(error));
+
+          }),
 
             app.get('/carts/:UserId/:MenuId/:ProductId/:Status/:ActiveYn',(req,res)=>{
 
@@ -621,6 +637,14 @@ console.log(today1);
                                 .then(restaurants=>res.send(restaurants))
                                 .catch((error)=>console.log(error));
                             });
+
+                            app.get('/restaurants/orders/:userId/:activeYn/:deleteYn',(req,res)=>{
+                              console.log('hi '+req.params.userId);
+
+                              Restaurant.find({UserId:req.params.userId})
+                              .then(restaurants=>res.send(restaurants))
+                              .catch((error)=>console.log(error));
+                          });
 
                             app.get('/orderdetails/:RestaurantId/:ActiveYn',(req,res)=>{
 
@@ -824,6 +848,16 @@ console.log("suggestion entered");
                                                           .catch((error)=>console.log(error));
 
                                                           }),
+
+                                                          app.patch('/owner/restaurants/:_id', (req,res)=>{
+
+
+                                                            //updateProducts(req.params._id,req.body.availableStatus);
+                                                            Restaurant.findOneAndUpdate({_id: req.params._id}, {$set: {RestaurantName:req.body.RestaurantName,Address:req.body.Address,MobileNo:req.body.MobileNo,Description:req.body.Description,RestaurantType:req.body.RestaurantType}})
+                                                            .then((restaurants)=> res.send(restaurants))
+                                                            .catch((error)=>console.log(error));
+  
+                                                            }),
 
 
 
