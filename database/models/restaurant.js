@@ -114,8 +114,16 @@ type:String
     },
     Locality:{
         type:String
+    },
+    Description:{
+      type:String
+    },
+    Distance:{
+      type:Number
+    },
+    OverallRating:{
+      type:Number
     }
-
 
 
 
