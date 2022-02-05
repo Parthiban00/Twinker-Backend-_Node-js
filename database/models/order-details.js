@@ -131,6 +131,9 @@ type:Array
     },
     Type:{
         type:String
+    },
+    RestaurantStatus:{
+        type:String
     }
 
 

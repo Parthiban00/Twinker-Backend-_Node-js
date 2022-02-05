@@ -448,7 +448,7 @@ console.log(req.body.ImageUrl);
 
         app.get('/restaurants/:restId/mainmenus/products/get',(req,res)=>{
 
-            Products.find({RestaurantId: req.params.restId}).sort({"AvailableStatus":-1})
+            Products.find({RestaurantId: req.params.restId,ActiveYn:true,DeleteYn:false}).sort({"AvailableStatus":-1})
             .then(Products=>res.send(Products))
             .catch((error)=>console.log(error));
         });
@@ -460,6 +460,14 @@ console.log(req.body.ImageUrl);
             .catch((error)=>console.log(error));
 
             }),
+
+            app.patch('/deleteproducts/products/:productId', (req,res)=>{
+              console.log('menu delted ');
+              Products.findOneAndUpdate({_id: req.params.productId}, {$set: {ActiveYn:false,DeleteYn:true}})
+              .then((products)=> res.send(products))
+              .catch((error)=>console.log(error));
+  
+              }),
 
               app.patch('/mainmenus/:menuId', (req,res)=>{
                 console.log('main menu update entered '+req.body.ViewType+' id '+req.params.menuId)
@@ -606,7 +614,7 @@ console.log(req.body.ImageUrl);
                            //   console.log(req.body.Locality);
 //console.log(req.body.DeliveryPartnerDetails);
                               if(req.body.DeliveryPartnerDetails==undefined || req.body.DeliveryPartnerDetails==null || req.body.DeliveryPartnerDetails==""){
-                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'Locality':req.body.Locality,DeliveryPartnerDetails:{'UserId':""},'Type':'Instant Orders'}))
+                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'Locality':req.body.Locality,DeliveryPartnerDetails:{'UserId':""},'Type':'Instant Orders','RestaurantStatus':'Placed'}))
                                 .save()
                                 .then((orderdetails)=> res.send(orderdetails))
                                 .catch((error)=>console.log(error));
@@ -614,7 +622,7 @@ console.log(req.body.ImageUrl);
                               }
                               else{
                                 //console.log("payment detials "+req.body.PaymentDetails.Status)
-                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'Locality':req.body.Locality,DeliveryPartnerDetails:req.body.DeliveryPartnerDetails,Suggestions:req.body.Suggestions,PaymentDetails:req.body.PaymentDetails,'Type':'Instant Orders'}))
+                                (new OrderDetails ({'OrderId': req.body.OrderId,'UserId':req.body.UserId,'UserName':req.body.UserName,'RestaurantId':req.body.RestaurantId,'RestaurantName':req.body.RestaurantName,'ItemTotal':req.body.ItemTotal,'DeliveryPartnerFee':req.body.DeliveryPartnerFee,'TaxesAndCharges':req.body.TaxesAndCharges,'TotalAmount':req.body.TotalAmount,'ActiveYn':req.body.ActiveYn,'DeleteYn':req.body.DeleteYn,'Status':req.body.Status,'CreatedDate':req.body.CreatedDate,'CreatedBy':req.body.CreatedBy,'ItemCount':req.body.ItemCount,'MobileNo':req.body.MobileNo,'Address':req.body.Address,'ItemDetails':req.body.ItemDetails,'DeliveryPartnerStatus':req.body.DeliveryPartnerStatus,'ActualAmount':req.body.ActualAmount,'CreatedTime':req.body.CreatedTime,'Discount':req.body.Discount,'DiscountDescritpion':req.body.DiscountDescritpion,'DiscountCode':req.body.DiscountCode,'Latitude':req.body.Latitude,'Longitude':req.body.Longitude,'Locality':req.body.Locality,DeliveryPartnerDetails:req.body.DeliveryPartnerDetails,Suggestions:req.body.Suggestions,PaymentDetails:req.body.PaymentDetails,'Type':'Instant Orders','RestaurantStatus':'Placed'}))
                                 .save()
                                 .then((orderdetails)=> res.send(orderdetails))
                                 .catch((error)=>console.log(error));
@@ -647,9 +655,20 @@ console.log(req.body.ImageUrl);
                           });
 
                             app.get('/orderdetails/:RestaurantId/:ActiveYn',(req,res)=>{
+                              let date_ob = new Date();
+                              let hours = date_ob.getHours();
+                              let minutes = date_ob.getMinutes();
+    
+                              var time=hours+":"+minutes;
+                              //console.log(hours + ":" + minutes);
+                              
+                              var dd = String(date_ob.getDate()).padStart(2, '0');
+                              var mm = String(date_ob.getMonth() + 1).padStart(2, '0'); //January is 0!
+                              var yyyy = date_ob.getFullYear();
+                              
+                              var today1 = yyyy + '-' + mm + '-' + dd;
 
-
-                                OrderDetails.find({RestaurantId:req.params.RestaurantId,ActiveYn:req.params.ActiveYn})
+                                OrderDetails.find({RestaurantId:req.params.RestaurantId,ActiveYn:req.params.ActiveYn,CreatedDate:today1})
                                 .then(orderdetails=>res.send(orderdetails))
                                 .catch((error)=>console.log(error));
                             });
@@ -660,7 +679,7 @@ console.log(req.body.ImageUrl);
 
 
 
-                                OrderDetails.findOneAndUpdate({RestaurantId: req.params.RestaurantId,_id:req.params._id}, {$set: {Status:req.body.Status,DeliveryPartnerStatus:req.body.Status}})
+                                OrderDetails.findOneAndUpdate({RestaurantId: req.params.RestaurantId,_id:req.params._id}, {$set: {RestaurantStatus:req.body.RestaurantStatus}})
                                 .then((orderdetails)=> res.send(orderdetails))
                                 .catch((error)=>console.log(error));
 
@@ -688,7 +707,7 @@ console.log('get order entered');
 
                                 app.get('/deliveryboy/orderdetails/:ActiveYn/:Locality',(req,res)=>{
 
-                                  console.log('get order entered 111');
+                                  console.log('get order entered 111 '+req.params.Locality);
                                                                       OrderDetails.find({ActiveYn:req.params.ActiveYn,Locality:req.params.Locality})
                                                                       .then(orderdetails=>res.send(orderdetails))
                                                                       .catch((error)=>console.log(error));
