@@ -107,9 +107,14 @@ const TaskSchema = new mongoose.Schema({
        
        ActualPrice:{
          type:Number
-       }
+       },
 
-
+Customizable:{
+  type:Boolean
+},
+CustomizableDetails:{
+  type:Array
+}
 
 });
 

@@ -633,7 +633,7 @@ console.log(req.body.ImageUrl);
                             app.get('/orderdetails/:UserId/:Status/:ActiveYn',(req,res)=>{
 
 
-                                OrderDetails.find({UserId:req.params.UserId,ActiveYn:req.params.ActiveYn,Status:req.params.Status})
+                                OrderDetails.find({UserId:req.params.UserId,ActiveYn:req.params.ActiveYn, Status : { $nin: ["Canceled by Customer","Completed"] }})
                                 .then(orderdetails=>res.send(orderdetails))
                                 .catch((error)=>console.log(error));
                             });
@@ -677,12 +677,20 @@ console.log(req.body.ImageUrl);
 
                             app.patch('/orderdetails/:_id/:RestaurantId', (req,res)=>{
 
+                             console.log("update entered ddddd "+req.body.Status);
 
+                             if(req.body.Status=='Accepted by Restaurant'){
 
-                                OrderDetails.findOneAndUpdate({RestaurantId: req.params.RestaurantId,_id:req.params._id}, {$set: {RestaurantStatus:req.body.RestaurantStatus}})
+                              OrderDetails.findOneAndUpdate({_id:req.params._id}, {$set: {Status:req.body.Status,DeliveryPartnerDetails:req.body.DeliveryPartnerDetails}})
+                              .then((orderdetails)=> res.send(orderdetails))
+                              .catch((error)=>console.log(error));
+                             }
+                             else{
+
+                                OrderDetails.findOneAndUpdate({_id:req.params._id}, {$set: {Status:req.body.Status}})
                                 .then((orderdetails)=> res.send(orderdetails))
                                 .catch((error)=>console.log(error));
-
+                              }
                                 }),
 
 
@@ -715,8 +723,9 @@ console.log('get order entered');
 
 
                                                                   app.get('/deliveryboy/orderdetails/:ActiveYn/:Locality/:CreatedDate',(req,res)=>{
+                                                         
 
-                                                                    console.log('get order entered 111');
+                                                                    console.log('get order entered 111 '+req.params.Locality+' date '+req.params.CreatedDate);
                                                                                                         OrderDetails.find({ActiveYn:req.params.ActiveYn,Locality:req.params.Locality,CreatedDate:req.params.CreatedDate})
                                                                                                         .then(orderdetails=>res.send(orderdetails))
                                                                                                         .catch((error)=>console.log(error));
@@ -725,10 +734,19 @@ console.log('get order entered');
                                 app.get('/orderdetails',(req,res)=>{
 
                                   console.log("get all orders from order details");
-                                  OrderDetails.find({})
+                                  OrderDetails.find({ Status : { $nin: ["Canceled by Customer","Completed"] },"UserId":mongoose.Types.ObjectId(data.orderUserId)})
                                  .then(orderdetails=>res.send(orderdetails))
                                   .catch((error)=>console.log(error));
                              });
+
+
+                             app.get('/placedorders/orderdetails',(req,res)=>{
+
+                              console.log("get all orders from order details placed orders");
+                              OrderDetails.find({ Status : { $nin: ["Canceled by Customer","Completed"] }})
+                             .then(orderdetails=>res.send(orderdetails))
+                              .catch((error)=>console.log(error));
+                         }); 
 
 //                                 app.get('/orderdetails/:ActiveYn/:UserId/:DeleteYn',(req,res)=>{
 
